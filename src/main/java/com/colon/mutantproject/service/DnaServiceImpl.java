@@ -1,6 +1,8 @@
 package com.colon.mutantproject.service;
 
+import com.colon.mutantproject.service.exception.DnaBaseException;
 import com.colon.mutantproject.service.exception.DnaFormatException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
@@ -10,17 +12,19 @@ public class DnaServiceImpl implements DnaService {
 
   private Map<String, Integer> baseMap = new ConcurrentHashMap<>();
 
+
   /**
    * Todo: Mejorar metodo
    */
-  public Boolean isMutant(String[] dna) throws DnaFormatException {
+  public Boolean isMutant(String[] dna) throws DnaFormatException, DnaBaseException {
 
     char[][] matrix = createMatrix(dna);
     int dim = matrix.length;
 
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
-        if (checkBase(matrix, i, j)) {
+        String base = Character.toString(matrix[i][j]);
+        if (checkBase(base) && validateBase(base)) {
 
           for (int k = 0; k <= 1; k++) {
             for (int l = -1; l <= 1; l++) {
@@ -30,8 +34,8 @@ public class DnaServiceImpl implements DnaService {
                   if (matrix[i + k][j + l] == matrix[i][j]) {
                     int auxI = i + k, auxJ = j + l;
                     int count = 2;
-                    while (insideDna(dna, auxI, auxJ, k, l) && (matrix[auxI + k][auxJ + l]
-                        == matrix[i][j]) && count < 4) {
+                    while (insideDna(dna, auxI, auxJ, k, l) &&
+                        (matrix[auxI + k][auxJ + l] == matrix[i][j]) && count < 4) {
                       count++;
                       auxI += k;
                       auxJ += l;
@@ -80,12 +84,19 @@ public class DnaServiceImpl implements DnaService {
   /**
    * Si contiene la base {X} mutante sigo buscando las otras.
    */
-  private boolean checkBase(char[][] matrix, int i, int j) {
-    if (baseMap.containsKey(Character.toString(matrix[i][j]))) {
+  private boolean checkBase(String base) {
+    if (baseMap.containsKey(base)) {
       return false;
     } else {
       return true;
     }
+  }
+
+  private Boolean validateBase(String base) throws DnaBaseException {
+    if (!Arrays.asList("A","C","G","T").contains(base)) {
+      throw new DnaBaseException("Base doesn't exist!");
+    }
+    return true;
   }
 
   /**

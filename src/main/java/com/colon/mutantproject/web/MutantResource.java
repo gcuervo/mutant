@@ -3,6 +3,7 @@ package com.colon.mutantproject.web;
 
 import com.colon.mutantproject.io.DnaRequest;
 import com.colon.mutantproject.service.DnaService;
+import com.colon.mutantproject.service.exception.DnaBaseException;
 import com.colon.mutantproject.service.exception.DnaFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,9 @@ public class MutantResource {
     try {
       isMutant = dnaService.isMutant(dna.getDna());
     } catch (DnaFormatException e) {
-      logger.error("Error: " + e.getMessage(),e);
+      logger.error("Error: " + e.getMessage(), e);
+    } catch (DnaBaseException e) {
+      logger.error("Error: " + e.getMessage(), e);
     }
     return isMutant ? new ResponseEntity(HttpStatus.OK)
         : new ResponseEntity(HttpStatus.FORBIDDEN);
