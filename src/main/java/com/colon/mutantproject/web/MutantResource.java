@@ -7,7 +7,6 @@ import com.colon.mutantproject.io.Stats;
 import com.colon.mutantproject.service.DnaService;
 import com.colon.mutantproject.service.exception.DnaBaseException;
 import com.colon.mutantproject.service.exception.DnaFormatException;
-import javax.ws.rs.POST;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,6 @@ public class MutantResource {
     return isMutant ? new ResponseEntity(HttpStatus.OK)
         : new ResponseEntity(HttpStatus.FORBIDDEN);
   }
-
 
   @GetMapping("/stats")
   public ResponseEntity<Stats> getStats(){
