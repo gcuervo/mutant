@@ -1,22 +1,32 @@
 package com.colon.mutantproject.service;
 
+import com.colon.mutantproject.io.DnaRequest;
+import com.colon.mutantproject.io.Stats;
+import com.colon.mutantproject.model.Dna;
+import com.colon.mutantproject.repository.DnaRepository;
 import com.colon.mutantproject.service.exception.DnaBaseException;
 import com.colon.mutantproject.service.exception.DnaFormatException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DnaServiceImpl implements DnaService {
 
-  private Map<String, Integer> baseMap = new ConcurrentHashMap<>();
-
+  @Autowired
+  private DnaRepository dnaRepository;
 
   /**
    * Todo: Mejorar metodo
    */
+  @Override
   public Boolean isMutant(String[] dna) throws DnaFormatException, DnaBaseException {
+
+    Map<String, Integer> baseMap = new HashMap<>();
 
     char[][] matrix = createMatrix(dna);
     int dim = matrix.length;
@@ -24,7 +34,7 @@ public class DnaServiceImpl implements DnaService {
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
         String base = Character.toString(matrix[i][j]);
-        if (checkBase(base) && validateBase(base)) {
+        if (checkBase(baseMap, base) && validateBase(base)) {
 
           for (int k = 0; k <= 1; k++) {
             for (int l = -1; l <= 1; l++) {
@@ -46,8 +56,7 @@ public class DnaServiceImpl implements DnaService {
                   }
                 }
               }
-              if (mutantFound()) {
-                baseMap.clear();
+              if (mutantFound(baseMap)) {
                 return true;
               }
             }
@@ -55,9 +64,32 @@ public class DnaServiceImpl implements DnaService {
         }
       }
     }
-    baseMap.clear();
     return false;
   }
+
+  @Override
+  public Stats getStats() {
+    List<Dna> dnaList = dnaRepository.findAll();
+    Stats stats = new Stats();
+    List<Dna> mutantList = dnaList.stream()
+                                  .filter(dna -> dna.getMutant())
+                                  .collect(Collectors.toList());
+    long mutantCant = mutantList.size();
+    long humanCant = dnaList.size()-mutantCant;
+    stats.setCountMutantDna(mutantList.size());
+    stats.setCountHumanDna(humanCant);
+    stats.setRatio(mutantCant/humanCant);
+    return stats;
+  }
+
+  @Override
+  public Long saveDna(DnaRequest dnaRequest){
+    Dna dna = new Dna();
+    dna.setDnaMatrix(Arrays.toString(dnaRequest.getDna()));
+    dna.setMutant(dnaRequest.getMutant());
+    return dnaRepository.save(dna).getId();
+  }
+
 
   private char[][] createMatrix(String[] dna) throws DnaFormatException {
     char[][] matrix = null;
@@ -74,7 +106,7 @@ public class DnaServiceImpl implements DnaService {
     return matrix;
   }
 
-  private boolean mutantFound() {
+  private boolean mutantFound(Map<String, Integer> baseMap) {
     if (baseMap.containsKey("A") && baseMap.containsKey("C") && baseMap.containsKey("G")) {
       return true;
     }
@@ -84,7 +116,7 @@ public class DnaServiceImpl implements DnaService {
   /**
    * Si contiene la base {X} mutante sigo buscando las otras.
    */
-  private boolean checkBase(String base) {
+  private boolean checkBase(Map<String, Integer> baseMap, String base) {
     if (baseMap.containsKey(base)) {
       return false;
     } else {
@@ -93,7 +125,7 @@ public class DnaServiceImpl implements DnaService {
   }
 
   private Boolean validateBase(String base) throws DnaBaseException {
-    if (!Arrays.asList("A","C","G","T").contains(base)) {
+    if (!Arrays.asList("A", "C", "G", "T").contains(base)) {
       throw new DnaBaseException("Base doesn't exist!");
     }
     return true;
