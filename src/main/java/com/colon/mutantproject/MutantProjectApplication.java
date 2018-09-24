@@ -2,15 +2,16 @@ package com.colon.mutantproject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @SpringBootApplication
 public class MutantProjectApplication {
 
 	public static void main(String[] args) {
+		//ionContext ctx =
 		SpringApplication.run(MutantProjectApplication.class, args);
+/*
+		DispatcherServlet dispatcherServlet = (DispatcherServlet)ctx.getBean("dispatcherServlet");
+		dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+		*/
 	}
 }

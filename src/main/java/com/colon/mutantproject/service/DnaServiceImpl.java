@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.sun.javafx.binding.StringFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +80,8 @@ public class DnaServiceImpl implements DnaService {
     long humanCant = dnaList.size()-mutantCant;
     stats.setCountMutantDna(mutantList.size());
     stats.setCountHumanDna(humanCant);
-    stats.setRatio(mutantCant/humanCant);
+    float ratio = humanCant != 0 ? (float)mutantCant/humanCant: 0f;
+    stats.setRatio(ratio);
     return stats;
   }
 
@@ -98,7 +101,7 @@ public class DnaServiceImpl implements DnaService {
       matrix = new char[dim][dim];
       for (int i = 0; i < dim; i++) {
         if (dna[i].length() != dim) {
-          throw new DnaFormatException("Bad DNA format"); // throw exception
+          throw new DnaFormatException("Bad DNA matrix format");
         }
         matrix[i] = dna[i].toCharArray();
       }
@@ -126,7 +129,7 @@ public class DnaServiceImpl implements DnaService {
 
   private Boolean validateBase(String base) throws DnaBaseException {
     if (!Arrays.asList("A", "C", "G", "T").contains(base)) {
-      throw new DnaBaseException("Base doesn't exist!");
+      throw new DnaBaseException(String.format("Base %s doesn't exist!", base));
     }
     return true;
   }

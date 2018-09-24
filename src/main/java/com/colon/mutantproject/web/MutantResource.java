@@ -24,34 +24,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/mutant")
 public class MutantResource {
 
-  private Logger logger = LoggerFactory.getLogger(MutantResource.class);
+    private Logger logger = LoggerFactory.getLogger(MutantResource.class);
 
-  @Autowired
-  private DnaService dnaService;
+    @Autowired
+    private DnaService dnaService;
 
-  @PostMapping
-  public ResponseEntity isMutant(@RequestBody DnaRequest dna) {
-    Boolean isMutant = false;
-    try {
-      isMutant = dnaService.isMutant(dna.getDna());
-    } catch (DnaFormatException e) {
-      logger.error("Error: " + e.getMessage(), e);
-    } catch (DnaBaseException e) {
-      logger.error("Error: " + e.getMessage(), e);
+    @PostMapping
+    public ResponseEntity isMutant(@RequestBody DnaRequest dna) {
+        Boolean isMutant = false;
+        isMutant = dnaService.isMutant(dna.getDna());
+        return isMutant ? new ResponseEntity(HttpStatus.OK)
+                : new ResponseEntity(HttpStatus.FORBIDDEN);
     }
-    return isMutant ? new ResponseEntity(HttpStatus.OK)
-        : new ResponseEntity(HttpStatus.FORBIDDEN);
-  }
 
-  @GetMapping("/stats")
-  public ResponseEntity<Stats> getStats(){
-    Stats stats = dnaService.getStats();
-    return ResponseEntity.ok().body(stats);
-  }
+    @GetMapping("/stats")
+    public ResponseEntity<Stats> getStats() {
+        Stats stats = dnaService.getStats();
+        return ResponseEntity.ok().body(stats);
+    }
 
-  @PostMapping("/save")
-  public ResponseEntity<DnaSaveResponse> saveDna(@RequestBody DnaRequest dna){
-    Long idDna = dnaService.saveDna(dna);
-    return ResponseEntity.status(HttpStatus.CREATED).body(new DnaSaveResponse(idDna));
-  }
+    @PostMapping("/dna/save")
+    public ResponseEntity<DnaSaveResponse> saveDna(@RequestBody DnaRequest dna) {
+        Long idDna = dnaService.saveDna(dna);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new DnaSaveResponse(idDna));
+    }
 }
