@@ -6,12 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MutantProjectApplication {
 
-	public static void main(String[] args) {
-		//ionContext ctx =
-		SpringApplication.run(MutantProjectApplication.class, args);
-/*
-		DispatcherServlet dispatcherServlet = (DispatcherServlet)ctx.getBean("dispatcherServlet");
-		dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
-		*/
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(MutantProjectApplication.class, args);
+  }
 }

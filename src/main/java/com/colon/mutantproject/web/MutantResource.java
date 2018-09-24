@@ -1,6 +1,7 @@
 package com.colon.mutantproject.web;
 
 
+import com.colon.mutantproject.io.DnaMutantResponse;
 import com.colon.mutantproject.io.DnaRequest;
 import com.colon.mutantproject.io.DnaSaveResponse;
 import com.colon.mutantproject.io.Stats;
@@ -24,28 +25,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/mutant")
 public class MutantResource {
 
-    private Logger logger = LoggerFactory.getLogger(MutantResource.class);
+  private Logger logger = LoggerFactory.getLogger(MutantResource.class);
 
-    @Autowired
-    private DnaService dnaService;
+  @Autowired
+  private DnaService dnaService;
 
-    @PostMapping
-    public ResponseEntity isMutant(@RequestBody DnaRequest dna) {
-        Boolean isMutant = false;
-        isMutant = dnaService.isMutant(dna.getDna());
-        return isMutant ? new ResponseEntity(HttpStatus.OK)
-                : new ResponseEntity(HttpStatus.FORBIDDEN);
-    }
+  @PostMapping
+  public ResponseEntity isMutant(@RequestBody DnaRequest dna) {
+    Boolean isMutant = false;
+    isMutant = dnaService.isMutant(dna.getDna());
+    return isMutant ? ResponseEntity.status(HttpStatus.OK).body(new DnaMutantResponse(isMutant))
+        : ResponseEntity.status(HttpStatus.FORBIDDEN).body(new DnaMutantResponse(isMutant));
+  }
 
-    @GetMapping("/stats")
-    public ResponseEntity<Stats> getStats() {
-        Stats stats = dnaService.getStats();
-        return ResponseEntity.ok().body(stats);
-    }
+  @GetMapping("/stats")
+  public ResponseEntity<Stats> getStats() {
+    Stats stats = dnaService.getStats();
+    return ResponseEntity.ok().body(stats);
+  }
 
-    @PostMapping("/dna/save")
-    public ResponseEntity<DnaSaveResponse> saveDna(@RequestBody DnaRequest dna) {
-        Long idDna = dnaService.saveDna(dna);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new DnaSaveResponse(idDna));
-    }
+  @PostMapping("/dna")
+  public ResponseEntity<DnaSaveResponse> saveDna(@RequestBody DnaRequest dna) {
+    Long idDna = dnaService.saveDna(dna);
+    return ResponseEntity.status(HttpStatus.CREATED).body(new DnaSaveResponse(idDna));
+  }
 }

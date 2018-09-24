@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.sun.javafx.binding.StringFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,25 +73,24 @@ public class DnaServiceImpl implements DnaService {
     List<Dna> dnaList = dnaRepository.findAll();
     Stats stats = new Stats();
     List<Dna> mutantList = dnaList.stream()
-                                  .filter(dna -> dna.getMutant())
-                                  .collect(Collectors.toList());
+        .filter(dna -> dna.getMutant())
+        .collect(Collectors.toList());
     long mutantCant = mutantList.size();
-    long humanCant = dnaList.size()-mutantCant;
+    long humanCant = dnaList.size() - mutantCant;
     stats.setCountMutantDna(mutantList.size());
     stats.setCountHumanDna(humanCant);
-    float ratio = humanCant != 0 ? (float)mutantCant/humanCant: 0f;
+    float ratio = humanCant != 0 ? (float) mutantCant / humanCant : mutantCant;
     stats.setRatio(ratio);
     return stats;
   }
 
   @Override
-  public Long saveDna(DnaRequest dnaRequest){
+  public Long saveDna(DnaRequest dnaRequest) {
     Dna dna = new Dna();
     dna.setDnaMatrix(Arrays.toString(dnaRequest.getDna()));
     dna.setMutant(dnaRequest.getMutant());
     return dnaRepository.save(dna).getId();
   }
-
 
   private char[][] createMatrix(String[] dna) throws DnaFormatException {
     char[][] matrix = null;
