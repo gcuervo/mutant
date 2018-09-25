@@ -1,5 +1,6 @@
 package com.colon.mutantproject.io;
 
+import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -8,7 +9,7 @@ public class Stats {
 
   private long countMutantDna;
   private long countHumanDna;
-  private float ratio;
+  private BigDecimal ratio;
 
   @JsonProperty("count_mutant_dna")
   public long getCountMutantDna() {
@@ -28,11 +29,11 @@ public class Stats {
     this.countHumanDna = countHumanDna;
   }
 
-  public float getRatio() {
+  public BigDecimal getRatio() {
     return ratio;
   }
 
-  public void setRatio(float ratio) {
+  public void setRatio(BigDecimal ratio) {
     this.ratio = ratio;
   }
 }
