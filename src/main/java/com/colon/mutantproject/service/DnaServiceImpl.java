@@ -59,14 +59,14 @@ public class DnaServiceImpl implements DnaService {
     boolean mutantGeneFound = false;
     for (int k = 0; k <= 1; k++) {
       for (int l = -1; l <= 1; l++) {
-        if (checkThisMove(k, l)) {
-          if (DnaUtils.insideDna(matrix, i, j, k, l)) {
+        if (checkThisMove(k, l) && DnaUtils.insideDna(matrix, i, j, k, l)) {
+         // if (DnaUtils.insideDna(matrix, i, j, k, l)) {
             if (mutantValidatorService.isMutant(matrix, i, j, k, l)) {
               logger.info(String.format("Mutant gene found -> %s", matrix[i][j]));
               baseSet.add(Character.toString(matrix[i][j]).toUpperCase());
               return true;
             }
-          }
+          //}
         }
       }
     }

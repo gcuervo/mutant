@@ -6,7 +6,7 @@ import com.colon.mutantproject.util.DnaBase;
 import com.colon.mutantproject.util.DnaUtils;
 
 @Service
-public class MutantValidatorServiceImpl implements MutantValidatorService{
+public class MutantValidatorServiceImpl implements MutantValidatorService {
 
   @Override
   public boolean isMutant(char[][] matrix, int i, int j, int k, int l) {
@@ -20,13 +20,12 @@ public class MutantValidatorServiceImpl implements MutantValidatorService{
         auxJ += l;
       }
       if (count == DnaBase.CANT_UNTIL_MUTANT) {
-        //baseSet.add(Character.toString(matrix[i][j]).toUpperCase());
         return true;
       }
     }
     return false;
   }
-  
+
   public boolean mutantFound(Set<String> baseSet) {
     if (baseSet.contains(DnaBase.BASE_A) && baseSet.contains(DnaBase.BASE_C)
         && baseSet.contains(DnaBase.BASE_G)) {

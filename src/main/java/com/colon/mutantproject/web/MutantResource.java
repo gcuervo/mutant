@@ -29,7 +29,7 @@ public class MutantResource {
   private DnaService dnaService;
 
   @PostMapping
-  public ResponseEntity isMutant(@RequestBody DnaRequest dna) {
+  public ResponseEntity<DnaMutantResponse> isMutant(@RequestBody DnaRequest dna) {
     Boolean isMutant = false;
     isMutant = dnaService.isMutant(dna.getDna());
     return isMutant ? ResponseEntity.status(HttpStatus.OK).body(new DnaMutantResponse(isMutant))
