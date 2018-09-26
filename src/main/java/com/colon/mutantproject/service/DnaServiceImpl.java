@@ -36,10 +36,8 @@ public class DnaServiceImpl implements DnaService {
       throw new DnaNotExistException("DNA don't exist");
     }
     Set<String> baseSet = new HashSet<>();
-
     char[][] matrix = createMatrix(dna);
     int dim = matrix.length;
-
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
         String base = Character.toString(matrix[i][j]);
