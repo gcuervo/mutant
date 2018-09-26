@@ -8,33 +8,46 @@ import static org.mockito.Mockito.mock;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import com.colon.mutantproject.io.Stats;
 import com.colon.mutantproject.model.Dna;
 import com.colon.mutantproject.repository.DnaRepository;
 import com.colon.mutantproject.service.DnaServiceImpl;
-import com.colon.mutantproject.util.RatioUtils;
+import com.colon.mutantproject.service.MutantValidatorService;
+import com.colon.mutantproject.util.DnaUtils;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class DnaServiceImplTest {
 
-  @Mock
-  private DnaRepository dnaRepository;
+  @Mock//(name = "dnaRepository")
+  private static DnaRepository dnaRepository;
+  
+  @Mock(name = "mutantValidatorService")
+  private MutantValidatorService mutantValidatorService;
 
   @Spy
+  //@Autowired
   @InjectMocks
-  private DnaServiceImpl dnaService;
-
+  private static DnaServiceImpl dnaService;
+  
+  @Before 
+  public void initMocks() {
+    MockitoAnnotations.initMocks(this);
+}
+  
   @Test
   public void testIsMutantTrue() {
     String[] dnaMutant = new String[] {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
-
+    //dnaService = new DnaServiceImpl(dnaRepository, mutantValidatorService);
+    
     Boolean isMutant = dnaService.isMutant(dnaMutant);
     assertTrue(isMutant);
   }
@@ -68,7 +81,7 @@ public class DnaServiceImplTest {
 
     Stats stats = dnaService.getStats();
 
-    assertEquals(RatioUtils.round(new BigDecimal(0.33)), stats.getRatio());
+    assertEquals(DnaUtils.round(new BigDecimal(0.33)), stats.getRatio());
     assertEquals(3, stats.getCountHumanDna());
     assertEquals(1, stats.getCountMutantDna());
   }
