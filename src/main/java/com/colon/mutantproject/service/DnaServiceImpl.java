@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.colon.mutantproject.io.DnaRequest;
@@ -16,19 +18,18 @@ import com.colon.mutantproject.service.exception.DnaBaseException;
 import com.colon.mutantproject.service.exception.DnaFormatException;
 import com.colon.mutantproject.service.exception.DnaNotExistException;
 import com.colon.mutantproject.util.DnaBase;
-import com.colon.mutantproject.util.RatioUtils;
+import com.colon.mutantproject.util.DnaUtils;
 
 @Service
 public class DnaServiceImpl implements DnaService {
+  private static final Logger logger = LoggerFactory.getLogger(DnaServiceImpl.class);
 
   @Autowired
   private DnaRepository dnaRepository;
 
-  /**
-   * Todo: Mejorar metodo
-   *
-   * Todo:Hacer que el checkeo de si es mutante sea Loose coupling
-   */
+  @Autowired
+  private MutantValidatorService mutantValidatorService;
+
   @Override
   public Boolean isMutant(String[] dna) throws DnaFormatException, DnaBaseException {
     if (dna == null) {
@@ -42,52 +43,50 @@ public class DnaServiceImpl implements DnaService {
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
         String base = Character.toString(matrix[i][j]);
-        if (checkBase(baseSet, base) && validateBase(base)) {
-
-          for (int k = 0; k <= 1; k++) {
-            for (int l = -1; l <= 1; l++) {
-
-              if (checkThisMove(k, l)) {
-                if (insideDna(dna, i, j, k, l)) {
-                  if (matrix[i + k][j + l] == matrix[i][j]) {
-                    int auxI = i + k, auxJ = j + l;
-                    int count = 2;
-                    while (insideDna(dna, auxI, auxJ, k, l)
-                        && (matrix[auxI + k][auxJ + l] == matrix[i][j]) && count < 4) {
-                      count++;
-                      auxI += k;
-                      auxJ += l;
-                    }
-                    if (count == 4) {
-                      baseSet.add(Character.toString(matrix[i][j]).toUpperCase());
-                    }
-                  }
-                }
-              }
-              if (mutantFound(baseSet)) {
-                return true;
-              }
+        if (alreadyInMutantBase(baseSet, base) && validateBase(base)) {
+          if (checkAround(baseSet, matrix, i, j)) {
+            if (mutantValidatorService.mutantFound(baseSet)) {
+              logger.info("******* Mutant Found *******");
+              return true;
             }
           }
         }
       }
     }
+    logger.info("******* Mutant not Found *******");
     return false;
+  }
+
+  private boolean checkAround(Set<String> baseSet, char[][] matrix, int i, int j) {
+    boolean mutantGeneFound = false;
+    for (int k = 0; k <= 1; k++) {
+      for (int l = -1; l <= 1; l++) {
+        if (checkThisMove(k, l)) {
+          if (DnaUtils.insideDna(matrix, i, j, k, l)) {
+            if (mutantValidatorService.isMutant(matrix, i, j, k, l)) {
+              logger.info(String.format("Mutant gene found -> %s", matrix[i][j]));
+              baseSet.add(Character.toString(matrix[i][j]).toUpperCase());
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return mutantGeneFound;
   }
 
   @Override
   public Stats getStats() {
     List<Dna> dnaList = dnaRepository.findAll();
     Stats stats = new Stats();
-    List<Dna> mutantList = dnaList.stream()
-                                  .filter(dna -> dna.getMutant())
-                                  .collect(Collectors.toList());
+    List<Dna> mutantList =
+        dnaList.stream().filter(dna -> dna.getMutant()).collect(Collectors.toList());
     long mutantCant = mutantList.size();
     long humanCant = dnaList.size() - mutantCant;
     stats.setCountMutantDna(mutantList.size());
     stats.setCountHumanDna(humanCant);
     float ratio = humanCant != 0 ? (float) mutantCant / humanCant : mutantCant;
-    stats.setRatio(RatioUtils.round(new BigDecimal(ratio)));
+    stats.setRatio(DnaUtils.round(new BigDecimal(ratio)));
     return stats;
   }
 
@@ -114,18 +113,11 @@ public class DnaServiceImpl implements DnaService {
     return matrix;
   }
 
-  private boolean mutantFound(Set<String> baseSet) {
-    if (baseSet.contains(DnaBase.BASE_A) && baseSet.contains(DnaBase.BASE_C)
-        && baseSet.contains(DnaBase.BASE_G)) {
-      return true;
-    }
-    return false;
-  }
 
   /**
    * Si contiene la base {X} mutante sigo buscando las otras.
    */
-  private boolean checkBase(Set<String> baseSet, String base) {
+  private boolean alreadyInMutantBase(Set<String> baseSet, String base) {
     if (baseSet.contains(base)) {
       return false;
     } else {
@@ -155,13 +147,5 @@ public class DnaServiceImpl implements DnaService {
       return true;
     }
     return false;
-  }
-
-  private boolean insideDna(String[] dna, int posI, int posJ, int auxI, int auxJ) {
-    if (posI + auxI >= dna.length || posI + auxI < 0 || posJ + auxJ >= dna.length
-        || posJ + auxJ < 0) {
-      return false;
-    }
-    return true;
   }
 }
