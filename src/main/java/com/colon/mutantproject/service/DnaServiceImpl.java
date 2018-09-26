@@ -26,6 +26,8 @@ public class DnaServiceImpl implements DnaService {
 
   /**
    * Todo: Mejorar metodo
+   *
+   * Todo:Hacer que el checkeo de si es mutante sea Loose coupling
    */
   @Override
   public Boolean isMutant(String[] dna) throws DnaFormatException, DnaBaseException {

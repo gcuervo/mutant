@@ -47,18 +47,6 @@ public class DnaServiceImplTest {
     assertFalse(isMutant);
   }
 
-  /*
-   * @Test public void testSaveDna() { String[] dna = new String[] {"ATGCCA", "CAGTAC", "TTCTGT",
-   * "AGAAGG", "CGCCTA", "TCACTG"}; DnaRequest dnaReq = mock(DnaRequest.class);
-   * 
-   * doReturn(dna).when(dnaReq).getDna();
-   * 
-   * // when(dnaReq.getDna()).thenReturn(dna);
-   * 
-   * Long id = dnaService.saveDna(dnaReq); assertFalse(isMutant); }
-   */
-
-
   @Test
   public void testGetStats1MOf4H() {
     List<Dna> dnaList = new ArrayList<>();
@@ -84,5 +72,4 @@ public class DnaServiceImplTest {
     assertEquals(3, stats.getCountHumanDna());
     assertEquals(1, stats.getCountMutantDna());
   }
-
 }
