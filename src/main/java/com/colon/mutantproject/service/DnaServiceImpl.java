@@ -41,7 +41,7 @@ public class DnaServiceImpl implements DnaService {
     for (int i = 0; i < dim; i++) {
       for (int j = 0; j < dim; j++) {
         String base = Character.toString(matrix[i][j]);
-        if (alreadyInMutantBase(baseSet, base) && validateBase(base)) {
+        if (!alreadyInMutantBase(baseSet, base) && validateBase(base)) {
           if (checkAround(baseSet, matrix, i, j)) {
             if (mutantValidatorService.mutantFound(baseSet)) {
               logger.info("******* Mutant Found *******");
@@ -117,9 +117,9 @@ public class DnaServiceImpl implements DnaService {
    */
   private boolean alreadyInMutantBase(Set<String> baseSet, String base) {
     if (baseSet.contains(base)) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }
 
