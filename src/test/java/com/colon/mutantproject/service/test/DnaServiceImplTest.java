@@ -3,8 +3,12 @@ package com.colon.mutantproject.service.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +31,13 @@ import com.colon.mutantproject.util.DnaUtils;
 @RunWith(MockitoJUnitRunner.class)
 public class DnaServiceImplTest {
 
-  @Mock//(name = "dnaRepository")
+  @Mock
   private static DnaRepository dnaRepository;
   
   @Mock(name = "mutantValidatorService")
   private MutantValidatorService mutantValidatorService;
 
   @Spy
-  //@Autowired
   @InjectMocks
   private static DnaServiceImpl dnaService;
   
@@ -46,7 +49,8 @@ public class DnaServiceImplTest {
   @Test
   public void testIsMutantTrue() {
     String[] dnaMutant = new String[] {"ATGCGA", "CAGTGC", "TTATGT", "AGAAGG", "CCCCTA", "TCACTG"};
-    //dnaService = new DnaServiceImpl(dnaRepository, mutantValidatorService);
+    doReturn(true).when(mutantValidatorService).isMutantGene(any(),anyInt(),anyInt(),anyInt(),anyInt());
+    doReturn(true).when(mutantValidatorService).mutantFound(anySet());
     
     Boolean isMutant = dnaService.isMutant(dnaMutant);
     assertTrue(isMutant);
@@ -55,10 +59,14 @@ public class DnaServiceImplTest {
   @Test
   public void testIsMutantFalse() {
     String[] dnaHuman = new String[] {"ATGCCA", "CAGTAC", "TTCTGT", "AGAAGG", "CGCCTA", "TCACTG"};
+    doReturn(false).when(mutantValidatorService).isMutantGene(any(),anyInt(),anyInt(),anyInt(),anyInt());
+    //doReturn(false).when(mutantValidatorService).mutantFound(anySet());
 
     Boolean isMutant = dnaService.isMutant(dnaHuman);
     assertFalse(isMutant);
   }
+
+
 
   @Test
   public void testGetStats1MOf4H() {

@@ -9,7 +9,7 @@ import com.colon.mutantproject.util.DnaUtils;
 public class MutantValidatorServiceImpl implements MutantValidatorService {
 
   @Override
-  public boolean isMutant(char[][] matrix, int i, int j, int k, int l) {
+  public boolean isMutantGene(char[][] matrix, int i, int j, int k, int l) {
     if (matrix[i + k][j + l] == matrix[i][j]) {
       int auxI = i + k, auxJ = j + l;
       int count = 2;

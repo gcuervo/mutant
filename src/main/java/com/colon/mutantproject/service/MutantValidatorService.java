@@ -4,7 +4,7 @@ import java.util.Set;
 
 public interface MutantValidatorService {
   
-  boolean isMutant(char[][] matrix, int i, int j, int k, int l);
+  boolean isMutantGene(char[][] matrix, int i, int j, int k, int l);
 
-  public boolean mutantFound(Set<String> baseSet);
+  boolean mutantFound(Set<String> baseSet);
 }

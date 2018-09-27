@@ -30,6 +30,11 @@ public class DnaServiceImpl implements DnaService {
   @Autowired
   private MutantValidatorService mutantValidatorService;
 
+  DnaServiceImpl(DnaRepository dnaRepository, MutantValidatorService mutantValidatorService) {
+    this.dnaRepository = dnaRepository;
+    this.mutantValidatorService = mutantValidatorService;
+  }
+
   @Override
   public Boolean isMutant(String[] dna) throws DnaFormatException, DnaBaseException {
     if (dna == null) {
@@ -61,7 +66,7 @@ public class DnaServiceImpl implements DnaService {
       for (int l = -1; l <= 1; l++) {
         if (checkThisMove(k, l) && DnaUtils.insideDna(matrix, i, j, k, l)) {
          // if (DnaUtils.insideDna(matrix, i, j, k, l)) {
-            if (mutantValidatorService.isMutant(matrix, i, j, k, l)) {
+            if (mutantValidatorService.isMutantGene(matrix, i, j, k, l)) {
               logger.info(String.format("Mutant gene found -> %s", matrix[i][j]));
               baseSet.add(Character.toString(matrix[i][j]).toUpperCase());
               return true;
@@ -113,7 +118,7 @@ public class DnaServiceImpl implements DnaService {
 
 
   /**
-   * Si contiene la base {X} mutante sigo buscando las otras.
+   * If it contains the {X} mutant base I keep looking for the others.
    */
   private boolean alreadyInMutantBase(Set<String> baseSet, String base) {
     if (baseSet.contains(base)) {
@@ -122,6 +127,7 @@ public class DnaServiceImpl implements DnaService {
       return false;
     }
   }
+
 
   private Boolean validateBase(String base) throws DnaBaseException {
     if (!Arrays.asList(DnaBase.BASE_A, DnaBase.BASE_C, DnaBase.BASE_G, DnaBase.BASE_T)
@@ -132,7 +138,7 @@ public class DnaServiceImpl implements DnaService {
   }
 
   /**
-   * Veo que los movimientos a hacer sean los necesarios
+   * Do only Necessary movements
    */
   private boolean checkThisMove(int rowMove, int colMove) {
     if (rowMove == 0 && colMove == 1) {

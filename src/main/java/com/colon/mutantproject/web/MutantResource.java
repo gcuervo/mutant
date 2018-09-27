@@ -23,8 +23,6 @@ import com.colon.mutantproject.service.DnaService;
 @RequestMapping("/mutant")
 public class MutantResource {
 
-  private static final Logger logger = LoggerFactory.getLogger(MutantResource.class);
-
   @Autowired
   private DnaService dnaService;
 
